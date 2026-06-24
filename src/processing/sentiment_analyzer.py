@@ -11,15 +11,6 @@ logger = logging.getLogger(__name__)
 LABEL_ORDER = ["positive", "negative", "neutral"]
 
 def load_finbert(model_name: str = "ProsusAI/finbert"):
-    """
-    Load FinBERT tokenizer and model.
-    Returns (tokenizer, model).
-    Downloads on first call (~400MB), cached by HuggingFace after that.
-    """
-
-    # TODO: use AutoTokenizer.from_pretrained(model_name)
-    # and AutoModelForSequenceClassification.from_pretrained(model_name)
-    # then call model.eval() before returning
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
 
@@ -28,17 +19,6 @@ def load_finbert(model_name: str = "ProsusAI/finbert"):
     return (tokenizer, model)
 
 def score_text(text: str, tokenizer, model) -> dict:
-    """
-    Run FinBERT on a single text string.
-    Returns dict: {"positive": float, "negative": float, "neutral": float, "score": float}
-    where score = P(positive) - P(negative)
-
-    truncate input to 512 tokens (FinBERT's max)
-    """
-    # TODO: implement
-    # Hint: tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
-    # then model(**inputs) gives you logits
-    # apply torch.nn.functional.softmax(logits, dim=1) to get probabilities
     with torch.no_grad():
         inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
         outputs = model(**inputs)
@@ -76,7 +56,6 @@ def score_posts(
     else:
         cache = {}
     
-    # 2. For each post, check if post["id"] is in cache
     for post in posts:
         post_id = post["id"]
         if post_id not in cache:
