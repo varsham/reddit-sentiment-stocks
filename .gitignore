@@ -1,0 +1,17 @@
+# Secrets
+.env
+
+# Data (too large for git; use git-lfs or just exclude)
+data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

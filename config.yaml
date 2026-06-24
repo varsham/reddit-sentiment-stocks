@@ -1,0 +1,24 @@
+reddit:
+  subreddits:
+    - stocks
+    - wallstreetbets
+    - investing
+  posts_per_search: 500
+  time_filter: "year"
+
+sentiment:
+  model: "ProsusAI/finbert"
+  batch_size: 16
+
+research:
+  prediction_horizon_days: 5
+  min_daily_mentions: 3
+
+tickers:
+  watchlist:
+    - AAPL
+    - TSLA
+    - GME
+    - NVDA
+    - AMD
+    
