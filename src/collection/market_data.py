@@ -11,31 +11,21 @@ def download_price_data(
     end_date: str,
     output_dir: Path,
 ) -> pd.DataFrame:
-    """
-    Download daily OHLCV data for ticker between start_date and end_date.
-    Save to output_dir/{ticker_lower}_{start}_{end}.csv.
-    Return the DataFrame.
 
-    If file already exists, load and return it (cache).
+    file_path = output_dir / f"{ticker.lower()}_{start_date}_{end_date}.csv"
 
-    start_date, end_date: strings like "2023-01-01"
-    """
-    # TODO: implement
-    # yf.download(ticker, start=start_date, end=end_date, auto_adjust=True)
-    # returns a DataFrame with columns: Open, High, Low, Close Volume
-    # auto_adjust=True adjusts for splits and dividends automatically
-    pass
+    if (file_path.is_file()):
+        return pd.read_csv(file_path, index_col=0, parse_dates=True)
+
+    df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=True)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    df.to_csv(file_path)
+
+    return df
 
 def compute_forward_returns(df: pd.DataFrame, horizon: int = 5) -> pd.DataFrame:
-    """
-    Add a column f'return_{horizon}d' to df.
-    return_{horizon}d[t] = (Close[t+horizon] / Close[t]) - 1
+    future_close = df["Close"].shift(-horizon)
+    df[f'return_{horizon}d'] = (future_close/ df["Close"]) - 1
 
-    Rows where the forward return can't be computed (last `horizon` rows)
-    will have NaN - that's correct, don't drop them here.
-
-    Returns the modified DataFrame.
-    """
-    # TODO: implement
-    # Hint: df["Close"].shift(-horizon) gives you the future price
-    pass
+    return df
