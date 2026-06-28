@@ -5,7 +5,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.collection.market_data import download_price_data, compute_forward_returns
 from src.processing.feature_builder import load_scored_posts, aggregate_daily_sentiment, build_features
 
-TICKER     = "GME"
+TICKER     = "TSLA"
 START_DATE = "2020-01-01"
 END_DATE   = "2022-12-31"
 
