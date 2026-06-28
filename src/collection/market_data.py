@@ -19,6 +19,9 @@ def download_price_data(
 
     df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=True)
 
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+
     output_dir.mkdir(parents=True, exist_ok=True)
     df.to_csv(file_path)
 
