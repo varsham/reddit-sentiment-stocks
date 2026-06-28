@@ -5,7 +5,7 @@ from datetime import datetime
 
 import pandas as pd
 
-sys.path.inset(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.processing.sentiment_analyzer import load_finbert, score_posts
 
@@ -61,7 +61,6 @@ if __name__ == "__main__":
 
     out_path = OUTPUT_DIR / f"{TICKER.lower()}_mentions.json"
     with open(out_path, "w") as f:
-        json.dump(scored, f, indent=2)
+        json.dump(score, f, indent=2)
     
-    print(f"Done. {len(scored)} posts saved to {out_path}")
-    
+    print(f"Done. {len(score)} posts saved to {out_path}")
