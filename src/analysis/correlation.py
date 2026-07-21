@@ -13,6 +13,14 @@ def pearson_and_spearman(
 
     df = df.dropna()
 
+    if len(df) < 2:
+        return {
+            "pearson_r": float("nan"),
+            "pearson_p": float("nan"),
+            "spearman_r": float("nan"),
+            "spearman_p": float("nan"),
+        }
+
     pearsonR, pearsonP = stats.pearsonr(df[sentiment_col], df[return_col])
     spearmanR, spearmanP = stats.spearmanr(df[sentiment_col], df[return_col])
 
@@ -35,7 +43,10 @@ def lagged_correlations(
 
     isSignif = False
 
-    for l in range(1, max_lag + 1):
+    # Shifting by l leaves len(df) - l usable rows; pearsonr needs at least 2.
+    effective_max_lag = min(max_lag, max(len(df) - 2, 0))
+
+    for l in range(1, effective_max_lag + 1):
         df_lagged = df.copy()
         df_lagged[sentiment_col] = df[sentiment_col].shift(l)
         spearman_pearson_dict = pearson_and_spearman(df_lagged, sentiment_col, return_col)
@@ -48,7 +59,7 @@ def lagged_correlations(
         row_list.append({"lag": l, "pearson_r": currPearsonR, "pearson_p": currPearsonP, "significant": isSignif})
         isSignif = False
     
-    returnDf = pd.DataFrame(row_list)
+    returnDf = pd.DataFrame(row_list, columns=["lag", "pearson_r", "pearson_p", "significant"])
 
     return returnDf
         
@@ -60,11 +71,25 @@ def run_granger_causality(
     max_lag: int = 5,
 ) -> dict:
     df = df[[return_col, sentiment_col]].dropna()
-    results = grangercausalitytests(df, max_lag)
+
+    # grangercausalitytests (with its default addconst=True) requires
+    # nobs > 3 * maxlag + 1, i.e. maxlag <= (nobs - 1) // 3 - 1.
+    safe_max_lag = (len(df) - 1) // 3 - 1
+    effective_max_lag = min(max_lag, safe_max_lag)
+
+    if effective_max_lag < 1:
+        return {
+            "lag": None,
+            "f_stat": float("nan"),
+            "p_value": float("nan"),
+            "significant": False,
+        }
+
+    results = grangercausalitytests(df, effective_max_lag)
 
     min_lag, best_p, best_f = None, float("inf"), None
 
-    for lag in range(1, max_lag + 1):
+    for lag in range(1, effective_max_lag + 1):
         p = results[lag][0]['ssr_ftest'][1]
         f = results[lag][0]['ssr_ftest'][0]
         if p < best_p:
