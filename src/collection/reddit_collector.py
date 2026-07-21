@@ -1,3 +1,8 @@
+# NOTE: Not currently used. All data in this project was sourced from the
+# Kaggle WSB dataset via scripts/ingest_kaggle.py. This module is a
+# live-collection alternative for pulling fresh posts directly via the
+# Reddit API (requires REDDIT_* credentials in .env) — kept as a future
+# option if the Kaggle snapshot needs to be extended with recent data.
 import os
 import json
 import time
