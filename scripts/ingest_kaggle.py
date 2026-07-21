@@ -11,7 +11,7 @@ from src.processing.sentiment_analyzer import load_finbert, score_posts
 
 CSV_PATH = Path("data/raw/reddit_wsb.csv")
 OUTPUT_DIR = Path("data/processed")
-TICKER = "TSLA"
+TICKER = "AMD"
 
 def csv_to_posts(csv_path: Path, ticker: str) -> list[dict]:
     df = pd.read_csv(csv_path)
